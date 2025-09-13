@@ -1,5 +1,6 @@
-import * as express from "express";
+import express from "express";
 
+const port = 3000;
 const app = express();
 
 app.get("/", (req, res) => {
@@ -8,4 +9,8 @@ app.get("/", (req, res) => {
       hello: "world",
     }),
   );
+});
+
+app.listen(port, () => {
+  console.info("Started server at port", port);
 });
