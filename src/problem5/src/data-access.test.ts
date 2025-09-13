@@ -5,13 +5,13 @@ import { DataAccess } from "./data-access.js";
 
 test("initialize successfully", () => {
   const db = new Database(":memory:");
-  DataAccess.initialize(db);
+  DataAccess.migrate(db);
   expect(DataAccess.listTableNames(db)).includes("todo_items");
 });
 
 test("create and list successfully", () => {
   const db = new Database(":memory:");
-  DataAccess.initialize(db);
+  DataAccess.migrate(db);
   DataAccess.TodoItem.create(db, {
     title: "title 1",
     description: "description 1",
@@ -27,7 +27,7 @@ test("create and list successfully", () => {
 
 test("list with filter", () => {
   const db = new Database(":memory:");
-  DataAccess.initialize(db);
+  DataAccess.migrate(db);
 
   DataAccess.TodoItem.create(db, {
     title: "title 1",
@@ -75,7 +75,7 @@ test("list with filter", () => {
 
 test("find one successfully", () => {
   const db = new Database(":memory:");
-  DataAccess.initialize(db);
+  DataAccess.migrate(db);
 
   const itemData = {
     title: "title 1",
@@ -93,7 +93,7 @@ test("find one successfully", () => {
 
 test("update successfully", () => {
   const db = new Database(":memory:");
-  DataAccess.initialize(db);
+  DataAccess.migrate(db);
 
   const itemData = {
     title: "title 1",
@@ -114,7 +114,7 @@ test("update successfully", () => {
 
 test("delete successfully", () => {
   const db = new Database(":memory:");
-  DataAccess.initialize(db);
+  DataAccess.migrate(db);
 
   const itemData = {
     title: "title 1",

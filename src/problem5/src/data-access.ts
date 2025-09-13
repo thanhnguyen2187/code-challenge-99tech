@@ -3,9 +3,9 @@ import type { Database } from "better-sqlite3";
 import { type TodoItemDB, type TodoItemDisplay, transform } from "./types.js";
 
 export namespace DataAccess {
-  export function initialize(db: Database) {
+  export function migrate(db: Database) {
     const userVersion = db.pragma("user_version", { simple: true }) as number;
-    console.info("DataAccess.initialize: found user_version", userVersion);
+    console.info("DataAccess.migrate: found user_version", userVersion);
     switch (userVersion) {
       case 0: {
         db.prepare(`
@@ -24,12 +24,12 @@ export namespace DataAccess {
       }
       case 1: {
         console.info(
-          "DataAccess.initialize: at latest version; nothing else to do",
+          "DataAccess.migrate: at latest version; nothing else to do",
         );
         break;
       }
       default: {
-        const message = "DataAccess.initialize: invalid version!";
+        const message = "DataAccess.migrate: invalid version!";
         throw new Error(message);
       }
     }
