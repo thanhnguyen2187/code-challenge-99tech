@@ -1,9 +1,14 @@
 import { randomUUID } from "node:crypto";
-import type { Database } from "better-sqlite3";
+// import type { Database } from "better-sqlite3";
+import BetterSQLite3 from "better-sqlite3";
 import { type TodoItemDB, type TodoItemDisplay, transform } from "./types.js";
 
 export namespace DataAccess {
-  export function migrate(db: Database) {
+  export function createDb(dbUrl: string): BetterSQLite3.Database {
+    return new BetterSQLite3(dbUrl);
+  }
+
+  export function migrate(db: BetterSQLite3.Database) {
     const userVersion = db.pragma("user_version", { simple: true }) as number;
     console.info("DataAccess.migrate: found user_version", userVersion);
     switch (userVersion) {
@@ -35,7 +40,7 @@ export namespace DataAccess {
     }
   }
 
-  export function listTableNames(db: Database) {
+  export function listTableNames(db: BetterSQLite3.Database) {
     const records = db
       .prepare("SELECT name FROM sqlite_schema WHERE type = 'table'")
       .all() as { name: string }[];
@@ -44,7 +49,7 @@ export namespace DataAccess {
 
   export namespace TodoItem {
     export function create(
-      db: Database,
+      db: BetterSQLite3.Database,
       item: {
         title: string;
         description: string;
@@ -57,7 +62,10 @@ export namespace DataAccess {
       statement.run();
     }
 
-    export function findOne(db: Database, id: string): TodoItemDisplay {
+    export function findOne(
+      db: BetterSQLite3.Database,
+      id: string,
+    ): TodoItemDisplay {
       const statement = db
         .prepare(`
           SELECT id,
@@ -75,7 +83,7 @@ export namespace DataAccess {
     }
 
     export function listAll(
-      db: Database,
+      db: BetterSQLite3.Database,
       searchKeyword: string | undefined = undefined,
       completed: boolean | undefined = undefined,
     ): TodoItemDisplay[] {
@@ -110,7 +118,10 @@ export namespace DataAccess {
       return records;
     }
 
-    export async function update(db: Database, item: TodoItemDisplay) {
+    export async function update(
+      db: BetterSQLite3.Database,
+      item: TodoItemDisplay,
+    ) {
       const statement = db
         .prepare(`
           UPDATE todo_items
@@ -131,7 +142,7 @@ export namespace DataAccess {
       statement.run();
     }
 
-    export async function deleteOne(db: Database, id: string) {
+    export async function deleteOne(db: BetterSQLite3.Database, id: string) {
       const statement = db
         .prepare(`DELETE FROM todo_items WHERE id = ?`)
         .bind(id);
