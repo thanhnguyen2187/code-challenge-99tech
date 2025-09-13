@@ -1,5 +1,6 @@
+import { randomUUID } from "node:crypto";
 import type { Database } from "better-sqlite3";
-import type { TodoItemDB, TodoItemDisplay } from "./types.js";
+import { type TodoItemDB, type TodoItemDisplay, transform } from "./types.js";
 
 export namespace DataAccess {
   export function initialize(db: Database) {
@@ -50,16 +51,27 @@ export namespace DataAccess {
       },
     ) {
       const statement = db.prepare(
-        "INSERT INTO todo_items(title, description) VALUES (?, ?)",
+        "INSERT INTO todo_items(id, title, description) VALUES (?, ?, ?)",
       );
-      statement.run(item.title, item.description);
+      statement.bind(randomUUID(), item.title, item.description);
+      statement.run();
     }
 
-    export async function listOne(
-      db: Database,
-      id: string,
-    ): Promise<TodoItemDisplay> {
-      throw new Error("not implemented!");
+    export function findOne(db: Database, id: string): TodoItemDisplay {
+      const statement = db
+        .prepare(`
+          SELECT id,
+                 title,
+                 description,
+                 created_at,
+                 completed_at,
+                 updated_at
+          FROM todo_items
+          WHERE id = ?
+        `)
+        .bind(id);
+      const record = statement.get() as TodoItemDB;
+      return transform(record);
     }
 
     export function listAll(db: Database): TodoItemDisplay[] {
