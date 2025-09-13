@@ -118,10 +118,7 @@ export namespace DataAccess {
       return records;
     }
 
-    export async function update(
-      db: BetterSQLite3.Database,
-      item: TodoItemDisplay,
-    ) {
+    export function update(db: BetterSQLite3.Database, item: TodoItemDisplay) {
       const statement = db
         .prepare(`
           UPDATE todo_items
@@ -142,7 +139,7 @@ export namespace DataAccess {
       statement.run();
     }
 
-    export async function deleteOne(db: BetterSQLite3.Database, id: string) {
+    export function deleteOne(db: BetterSQLite3.Database, id: string) {
       const statement = db
         .prepare(`DELETE FROM todo_items WHERE id = ?`)
         .bind(id);
