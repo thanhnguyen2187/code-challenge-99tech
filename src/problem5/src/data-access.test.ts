@@ -64,3 +64,25 @@ test("update successfully", () => {
   expect(itemFound.title).toEqual(newTitle);
   expect(itemFound.updatedAt).toBeGreaterThan(0);
 });
+
+test("delete successfully", () => {
+  const db = new Database(":memory:");
+  DataAccess.initialize(db);
+
+  const itemData = {
+    title: "title 1",
+    description: "description 1",
+  };
+  DataAccess.TodoItem.create(db, itemData);
+
+  {
+    const items = DataAccess.TodoItem.listAll(db);
+    // biome-ignore lint/style/noNonNullAssertion: false negative TypeScript check
+    const item = items[0]!;
+    DataAccess.TodoItem.deleteOne(db, item.id);
+  }
+  {
+    const items = DataAccess.TodoItem.listAll(db);
+    expect(items).length(0);
+  }
+});

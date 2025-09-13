@@ -110,7 +110,10 @@ export namespace DataAccess {
     }
 
     export async function deleteOne(db: Database, id: string) {
-      throw new Error("not implemented!");
+      const statement = db
+        .prepare(`DELETE FROM todo_items WHERE id = ?`)
+        .bind(id);
+      statement.run();
     }
   }
 }
