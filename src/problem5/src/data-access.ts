@@ -74,16 +74,35 @@ export namespace DataAccess {
       return transform(record);
     }
 
-    export function listAll(db: Database): TodoItemDisplay[] {
-      const statement = db.prepare(`
-          SELECT id,
-                 title,
-                 description,
-                 created_at,
-                 completed_at,
-                 updated_at
-          FROM todo_items
-      `);
+    export function listAll(
+      db: Database,
+      searchKeyword: string | undefined = undefined,
+      completed: boolean | undefined = undefined,
+    ): TodoItemDisplay[] {
+      const whereClauses = ["TRUE"];
+      const bindings = [];
+      if (searchKeyword) {
+        whereClauses.push("title LIKE ?");
+        bindings.push(searchKeyword);
+        whereClauses.push("description LIKE ?");
+        bindings.push(searchKeyword);
+      }
+      if (completed) {
+        whereClauses.push("completed_at IS NOT NULL");
+      }
+      const whereText = whereClauses.join(" AND ");
+      const statement = db
+        .prepare(`
+            SELECT id,
+                   title,
+                   description,
+                   created_at,
+                   completed_at,
+                   updated_at
+            FROM todo_items
+            WHERE ${whereText}
+        `)
+        .bind(...bindings);
       const recordsDB = statement.all() as TodoItemDB[];
       const records: TodoItemDisplay[] = recordsDB.map(transform);
 
@@ -97,13 +116,15 @@ export namespace DataAccess {
           SET
               title = ?,
               description = ?,
-              updated_at = ?
+              updated_at = ?,
+              completed_at = ?
           WHERE id = ?
       `)
         .bind(
           item.title,
           item.description,
           Math.round(Date.now() / 1_000),
+          item.completedAt,
           item.id,
         );
       statement.run();
