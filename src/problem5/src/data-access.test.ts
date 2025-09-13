@@ -42,3 +42,25 @@ test("find one successfully", () => {
   expect(itemData.title).toEqual(itemFound.title);
   expect(itemData.description).toEqual(itemFound.description);
 });
+
+test("update successfully", () => {
+  const db = new Database(":memory:");
+  DataAccess.initialize(db);
+
+  const itemData = {
+    title: "title 1",
+    description: "description 1",
+  };
+  DataAccess.TodoItem.create(db, itemData);
+  const items = DataAccess.TodoItem.listAll(db);
+  // biome-ignore lint/style/noNonNullAssertion: false negative TypeScript check
+  const item = items[0]!;
+  const newTitle = "title 1 modified";
+  item.title = newTitle;
+
+  DataAccess.TodoItem.update(db, item);
+
+  const itemFound = DataAccess.TodoItem.findOne(db, item.id);
+  expect(itemFound.title).toEqual(newTitle);
+  expect(itemFound.updatedAt).toBeGreaterThan(0);
+});

@@ -91,7 +91,22 @@ export namespace DataAccess {
     }
 
     export async function update(db: Database, item: TodoItemDisplay) {
-      throw new Error("not implemented!");
+      const statement = db
+        .prepare(`
+          UPDATE todo_items
+          SET
+              title = ?,
+              description = ?,
+              updated_at = ?
+          WHERE id = ?
+      `)
+        .bind(
+          item.title,
+          item.description,
+          Math.round(Date.now() / 1_000),
+          item.id,
+        );
+      statement.run();
     }
 
     export async function deleteOne(db: Database, id: string) {
