@@ -85,14 +85,7 @@ export namespace DataAccess {
           FROM todo_items
       `);
       const recordsDB = statement.all() as TodoItemDB[];
-      const records: TodoItemDisplay[] = recordsDB.map((record) => ({
-        id: record.id,
-        title: record.title,
-        description: record.description,
-        createdAt: record.created_at,
-        completedAt: record.completed_at,
-        updatedAt: record.updated_at,
-      }));
+      const records: TodoItemDisplay[] = recordsDB.map(transform);
 
       return records;
     }
