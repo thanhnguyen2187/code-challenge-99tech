@@ -62,7 +62,7 @@ export namespace DataAccess {
       throw new Error("not implemented!");
     }
 
-    export function listAll(db: Database): Promise<TodoItemDisplay[]> {
+    export function listAll(db: Database): TodoItemDisplay[] {
       const statement = db.prepare(`
           SELECT id,
                  title,
