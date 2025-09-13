@@ -1,26 +1,30 @@
 import type { Database } from "better-sqlite3";
-import type { TodoItem } from "./types.js";
+import type { TodoItemDB, TodoItemDisplay } from "./types.js";
 
 export namespace DataAccess {
   export function initialize(db: Database) {
-    const userVersion = db.pragma("user_version", { simple: true }) as number;
+    const userVersion = db.pragma("user_version", {simple: true}) as number;
+    console.info("DataAccess.initialize: found user_version", userVersion);
     switch (userVersion) {
       case 0: {
         db.prepare(`
-          CREATE TABLE todo_item (
-            id TEXT PRIMARY KEY,
-            title TEXT NOT NULL,
-            description TEXT NOT NULL,
-            created_at INTEGER DEFAULT (strftime('%s','now')),
-            completed_at INTEGER DEFAULT NULL,
-            updated_at INTEGER DEFAULT NULL
-          )
+            CREATE TABLE todo_item
+            (
+                id           TEXT PRIMARY KEY,
+                title        TEXT NOT NULL,
+                description  TEXT NOT NULL,
+                created_at   INTEGER DEFAULT (strftime('%s', 'now')),
+                completed_at INTEGER DEFAULT NULL,
+                updated_at   INTEGER DEFAULT NULL
+            )
         `).run();
         db.pragma("user_version = 1");
         break;
       }
       case 1: {
-        console.info("DataAccess.initialize: nothing else to do");
+        console.info(
+          "DataAccess.initialize: at latest version; nothing else to do",
+        );
         break;
       }
       default: {
@@ -30,22 +34,57 @@ export namespace DataAccess {
     }
   }
 
-  export async function create(db: Database, item: TodoItem) {
-    const statement = db.prepare(
-      "INSERT INTO todo_items(title, description)" + " VALUES (?, ?)",
-    );
-    statement.run(item.title, item.description);
+  export function listTableNames(db: Database) {
+    const records = db
+      .prepare("SELECT name FROM sqlite_schema WHERE type = 'table'")
+      .all() as { name: string }[];
+    return records.map((record) => record.name);
   }
-  export async function listOne(db: Database, id: string): Promise<TodoItem> {
-    throw new Error("not implemented!");
-  }
-  export async function listMany(db: Database): Promise<TodoItem[]> {
-    throw new Error("not implemented!");
-  }
-  export async function update(db: Database, item: TodoItem) {
-    throw new Error("not implemented!");
-  }
-  export async function deleteOne(db: Database, id: string) {
-    throw new Error("not implemented!");
+
+  export namespace TodoItem {
+    export function create(db: Database, item: TodoItemDisplay) {
+      const statement = db.prepare(
+        "INSERT INTO todo_items(title, description) VALUES (?, ?)",
+      );
+      statement.run(item.title, item.description);
+    }
+
+    export async function listOne(
+      db: Database,
+      id: string,
+    ): Promise<TodoItemDisplay> {
+      throw new Error("not implemented!");
+    }
+
+    export function listAll(db: Database): Promise<TodoItemDisplay[]> {
+      const statement = db.prepare(`
+          SELECT id,
+                 title,
+                 description,
+                 created_at,
+                 completed_at,
+                 updated_at
+          FROM todo_items
+      `);
+      const recordsDB = statement.all() as TodoItemDB[];
+      const records: TodoItemDisplay[] = recordsDB.map((record) => ({
+        id: record.id,
+        title: record.title,
+        description: record.description,
+        createdAt: record.created_at,
+        completedAt: record.completed_at,
+        updatedAt: record.updated_at,
+      }));
+
+      return records;
+    }
+
+    export async function update(db: Database, item: TodoItemDisplay) {
+      throw new Error("not implemented!");
+    }
+
+    export async function deleteOne(db: Database, id: string) {
+      throw new Error("not implemented!");
+    }
   }
 }
