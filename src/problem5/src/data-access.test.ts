@@ -8,4 +8,18 @@ test("initialize successfully", () => {
   expect(DataAccess.listTableNames(db)).includes("todo_item");
 });
 
-test("create and list successfully", () => {})
+test("create and list successfully", () => {
+  const db = new Database(":memory:");
+  DataAccess.initialize(db);
+  DataAccess.TodoItem.create(db, {
+    title: "title 1",
+    description: "description 1",
+  });
+  expect(DataAccess.TodoItem.listAll(db)).length(1);
+
+  DataAccess.TodoItem.create(db, {
+    title: "title 2",
+    description: "description 2",
+  });
+  expect(DataAccess.TodoItem.listAll(db)).length(2);
+});

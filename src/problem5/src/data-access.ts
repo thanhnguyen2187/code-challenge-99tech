@@ -3,12 +3,12 @@ import type { TodoItemDB, TodoItemDisplay } from "./types.js";
 
 export namespace DataAccess {
   export function initialize(db: Database) {
-    const userVersion = db.pragma("user_version", {simple: true}) as number;
+    const userVersion = db.pragma("user_version", { simple: true }) as number;
     console.info("DataAccess.initialize: found user_version", userVersion);
     switch (userVersion) {
       case 0: {
         db.prepare(`
-            CREATE TABLE todo_item
+            CREATE TABLE todo_items
             (
                 id           TEXT PRIMARY KEY,
                 title        TEXT NOT NULL,
@@ -42,7 +42,13 @@ export namespace DataAccess {
   }
 
   export namespace TodoItem {
-    export function create(db: Database, item: TodoItemDisplay) {
+    export function create(
+      db: Database,
+      item: {
+        title: string;
+        description: string;
+      },
+    ) {
       const statement = db.prepare(
         "INSERT INTO todo_items(title, description) VALUES (?, ?)",
       );
