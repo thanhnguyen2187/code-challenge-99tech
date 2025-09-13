@@ -82,13 +82,14 @@ export namespace DataAccess {
       const whereClauses = ["TRUE"];
       const bindings = [];
       if (searchKeyword) {
-        whereClauses.push("title LIKE ?");
-        bindings.push(searchKeyword);
-        whereClauses.push("description LIKE ?");
-        bindings.push(searchKeyword);
+        whereClauses.push("(title LIKE ? OR description LIKE ?)");
+        bindings.push(`%${searchKeyword}%`);
+        bindings.push(`%${searchKeyword}%`);
       }
-      if (completed) {
+      if (completed === true) {
         whereClauses.push("completed_at IS NOT NULL");
+      } else if (completed === false) {
+        whereClauses.push("completed_at IS NULL");
       }
       const whereText = whereClauses.join(" AND ");
       const statement = db
