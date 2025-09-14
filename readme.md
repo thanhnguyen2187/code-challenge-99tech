@@ -83,3 +83,26 @@ export function versionC(n: number): number {
 - Time complexity is `O(1)`, as we are "just" doing a simple calculation.
 - Space complexity is `O(1)`, as we use next to no memory at all.
 
+## Problem 5
+
+The word play in the description is nice, where "crude" and "CRUD" are
+homophones (same sound different spelling; I actually had to look up the word).
+Dependency installation and running can be found at the
+[README](src/problem5/README.md). The server is pretty basic, but I'll try to
+list out some interesting choices I made:
+
+- `pnpm` instead of `npm`: faster installation; can be used for
+  workspace/monorepo later
+- Biome instead of Prettify + ESLint: faster; easier to set up and simpler
+  configuration
+- SQLite instead of Postgres/MySQL/MongoDB: easier to setup (Postgres or MySQL
+  or MongoDB would require more work on both local development and production
+  deployment) and test (I can spin up in-memory SQLite for testing)
+- No ORM + hand-rolled migration code: I think in a team environment, I would go
+  with Drizzle and depend on it, but it's overkill for this project
+- Code structure:
+  - Database interaction in `namespace DataAccess` with functions receiving a
+    `db` parameter.
+  - 2-layers-ish, where a new request would get parsed for parameters (POST
+    body, or GET path param), then the parameters would be used by a function in
+    `namespace DataAccess`
