@@ -1,10 +1,85 @@
-# 99Tech Code Challenge #1 #
+# 99Tech Code Challenge
 
-Note that if you fork this repository, your responses may be publicly linked to this repo.  
-Please submit your application along with the solutions attached or linked.   
+This is my take on the hiring challenge by 99Tech. I applied for a backend role,
+and the problems for the role are:
 
-It is important that you minimally attempt the problems, even if you do not arrive at a working solution.
+> - Problem 4: Three ways to sum to n
+> - Problem 5: A Crude Server
+> - Problem 6: Architecture
 
-## Submission ##
-You can either provide a link to an online repository, attach the solution in your application, or whichever method you prefer.
-We're cool as long as we can view your solution without any pain.
+Note: I used LLM(s) for proof reading, not for coding nor problem understanding.
+Everything is 100% typed by me at first.
+
+## Problem 4
+
+Basically, the problem is to calculate $\sum_{i=1}^{n} i$. For example:
+
+```python
+# input
+n = 5
+# calculation
+f(n) = f(5) = 1 + 2 + 3 + 4 + 5 = ?
+```
+
+The full code with tests can be found [here](src/problem4/src). I implemented
+3 versions as required (albeit I'm not sure if the first and the second version
+differ that much).
+
+### Version A: straight forward looping
+
+The code looks like this:
+
+```ts
+export function versionA(n: number): number {
+  let sum = 0;
+  for (let i = 1; i <= n; i++) {
+    sum += i;
+  }
+  return sum;
+}
+```
+
+- Time complexity is `O(n)`, as we are iterating `n` times.
+- Space complexity is `O(1)`, as we are wasting no space.
+
+### Version B: using `reduce`
+
+I implemented a more "functional programming" variation of the above version:
+
+```ts
+export function versionB(n: number): number {
+  if (n <= 1) {
+    return 1;
+  }
+
+  const numbers = Array.from(Array(n + 1).keys());
+  const sum = numbers.reduce((acc, cur) => acc + cur, 0);
+  return sum;
+}
+```
+
+- Time complexity is `O(n)`, as we are iterating `n` times.
+- Space complexity is `O(n)`, as we are creating array `numbers` that has
+  `n + 1` elements from `0` to `n`. It can be optimized by using iterator, but I
+  don't feel that it's needed.
+
+### Version C: using a well-known mathematics formula
+
+The formula is:
+
+$$
+  \sum_{i=1}^{n} i = \frac{n(n + 1)}{2}
+$$
+
+It's implementation is the simplest, but I think the challenge is to be aware of
+it (and maybe to prove it using induction):
+
+```ts
+export function versionC(n: number): number {
+  return Math.round((n * (n + 1)) / 2);
+}
+```
+
+- Time complexity is `O(1)`, as we are "just" doing a simple calculation.
+- Space complexity is `O(1)`, as we use next to no memory at all.
+
