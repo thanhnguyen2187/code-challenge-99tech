@@ -92,14 +92,14 @@ Dependency installation and running can be found at the
 list out some interesting choices I made:
 
 - `pnpm` instead of `npm`: faster installation; can be used for
-  workspace/monorepo later
+  workspace/monorepo later.
 - Biome instead of Prettify + ESLint: faster; easier to set up and simpler
-  configuration
+  configuration.
 - SQLite instead of Postgres/MySQL/MongoDB: easier to setup (Postgres or MySQL
   or MongoDB would require more work on both local development and production
-  deployment) and test (I can spin up in-memory SQLite for testing)
+  deployment) and test (I can spin up in-memory SQLite for testing).
 - No ORM + hand-rolled migration code: I think in a team environment, I would go
-  with Drizzle and depend on it, but it's overkill for this project
+  with Drizzle/Kysely, but it's overkill for this project.
 
 I'll try to justify my codebase's structure as well:
 
@@ -172,12 +172,27 @@ I'll try to justify my codebase's structure as well:
         });
       }
     })
-  .post("/api/v1/todo-items", (req, res) => {
-    // ...
-  });
+    .post("/api/v1/todo-items", (req, res) => {
+      // ...
+    });
   ```
 
   Again, I think this approach helps making the code simple and easy to test.
   However, I totally understand teams' rationales if they decide to go with
   something heavy-weight like NestJS and would follow the established
   convention.
+
+Should I have more time, I would implement these things as well:
+
+- Logging library: it'd be great if we wrap the current `console.log` calls
+  around a `logger`
+- Data validation using `zod`: it's better than throwing error 500 at every
+  error like the current implementation.
+- Build to single `.js` using `esbuild` + Dockerfile: for a production-grade
+  deployment, people would expect the service to be Dockerized, and we should
+  give them that. However, I noticed that the image size would be large if we
+  copy also `node_module/`, so I often try to
+  - Use `esbuild` to turn the code into a single `index.js` file (similar to how
+    we build binary file), then
+  - Copy the final file to a "clean" image that only has NodeJS available
+
