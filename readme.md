@@ -86,7 +86,7 @@ export function versionC(n: number): number {
 ## Problem 5
 
 The word play in the description is nice, where "crude" and "CRUD" are
-homophones (same sound different spelling; I actually had to look up the word).
+homophones (same sound, different spelling; I actually had to look up the word).
 Dependency installation and running can be found at the
 [README](src/problem5/README.md). The server is pretty basic, but I'll try to
 list out some interesting choices I made:
@@ -100,9 +100,84 @@ list out some interesting choices I made:
   deployment) and test (I can spin up in-memory SQLite for testing)
 - No ORM + hand-rolled migration code: I think in a team environment, I would go
   with Drizzle and depend on it, but it's overkill for this project
-- Code structure:
-  - Database interaction in `namespace DataAccess` with functions receiving a
-    `db` parameter.
-  - 2-layers-ish, where a new request would get parsed for parameters (POST
-    body, or GET path param), then the parameters would be used by a function in
-    `namespace DataAccess`
+
+I'll try to justify my codebase's structure as well:
+
+- Database interaction in `namespace DataAccess` with functions receiving a
+  `db` parameter.
+
+  ```ts
+  // data-access.ts
+  import BetterSQLite3 from "better-sqlite3";
+
+  export namespace DataAccess {
+    export function createDb(dbUrl: string): BetterSQLite3.Database {
+      // ...
+    }
+
+    export function migrate(db: BetterSQLite3.Database) {
+      // ...
+    }
+
+    export namespace TodoItem {
+      export function create(
+        db: BetterSQLite3.Database,
+        item: {
+          title: string;
+          description: string;
+        },
+      ) {
+        // ...
+      }
+    }
+  ```
+
+  I'd say this structure of just using function with parameters is simpler to
+  read and to test. In case we really need a database-agnostic solution (like
+  using PostgresQL instead of SQLite), then we can either refactor `db` to a
+  more generic interface, or copy the database access code to a `v2` and
+  gradually implement new endpoints.
+
+- 2-layers-ish, where a new request would get parsed for parameters (POST
+  body, or GET path param), then the parameters would be used by a function in
+  `namespace DataAccess`.
+
+  ```ts
+  // index.ts
+  import express from "express";
+  import { DataAccess } from "./data-access.js";
+
+  const app = express();
+
+  const db = DataAccess.createDb(dbUrl);
+  DataAccess.migrate(db);
+
+  // ...
+  app
+    .get("/api/v1/todo-items", (req, res) => {
+      const searchKeyword =
+        typeof req.query.search === "string" && req.query.search !== ""
+          ? req.query.search
+          : undefined;
+      const completed = req.query.completed === "true";
+      try {
+        const items = DataAccess.TodoItem.listAll(db, searchKeyword, completed);
+        res.status(200).json({
+          data: items,
+        });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({
+          success: false,
+        });
+      }
+    })
+  .post("/api/v1/todo-items", (req, res) => {
+    // ...
+  });
+  ```
+
+  Again, I think this approach helps making the code simple and easy to test.
+  However, I totally understand teams' rationales if they decide to go with
+  something heavy-weight like NestJS and would follow the established
+  convention.
