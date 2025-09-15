@@ -7,6 +7,14 @@ role, and the problems for the role are:
 > - Problem 5: A Crude Server
 > - Problem 6: Architecture
 
+You can either continue reading, or watch these videos where I talk about my
+solutions (I made two videos because Loom limits recording length to 5 minutes):
+
+- [99Tech Take-Home Assignment Part 1: Problem 4 + Problem
+  5](https://www.loom.com/share/8f5b0bfd540247a69431d63b9f34321a)
+- [99Tech Take-Home Assignment Part 2: Problem
+  6](https://www.loom.com/share/6be62d7b267a4aa3a033ebf79615aa3f)
+
 Note: I used LLMs for proofreading only, not for coding or problem
 understanding. All code and solutions are 100% my original work.
 
