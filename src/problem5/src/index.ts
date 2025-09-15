@@ -11,8 +11,13 @@ DataAccess.migrate(db);
 app.use(express.json());
 app
   .get("/api/v1/todo-items", (req, res) => {
+    const searchKeyword =
+      typeof req.query.search === "string" && req.query.search !== ""
+        ? req.query.search
+        : undefined;
+    const completed = req.query.completed === "true";
     try {
-      const items = DataAccess.TodoItem.listAll(db);
+      const items = DataAccess.TodoItem.listAll(db, searchKeyword, completed);
       res.status(200).json({
         data: items,
       });
