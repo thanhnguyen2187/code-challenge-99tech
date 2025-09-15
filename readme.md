@@ -284,3 +284,7 @@ For the steps in the implementation plan, I'd ask the team to:
    decide if it's better to use either of them or hand roll the work
 3. Do the actual implementation
 
+On scalability, I'd say as the sync engine can be considered stateless, we would
+have no problem scaling them horizontally. For the database, I'd start with
+having read-only replications first before trying to dive in deeper.
+
