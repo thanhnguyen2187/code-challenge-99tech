@@ -1,14 +1,14 @@
 # 99Tech Code Challenge
 
-This is my take on the hiring challenge by 99Tech. I applied for a backend role,
-and the problems for the role are:
+This is my take on the hiring challenge from 99Tech. I applied for a backend
+role, and the problems for the role are:
 
 > - Problem 4: Three ways to sum to n
 > - Problem 5: A Crude Server
 > - Problem 6: Architecture
 
-Note: I used LLM(s) for proof reading, not for coding nor problem understanding.
-Everything is 100% typed by me at first.
+Note: I used LLMs for proofreading only, not for coding or problem
+understanding. All code and solutions are 100% my original work.
 
 ## Problem 4
 
@@ -48,10 +48,6 @@ I implemented a more "functional programming" variation of the above version:
 
 ```ts
 export function versionB(n: number): number {
-  if (n <= 1) {
-    return 1;
-  }
-
   const numbers = Array.from(Array(n + 1).keys());
   const sum = numbers.reduce((acc, cur) => acc + cur, 0);
   return sum;
@@ -71,7 +67,7 @@ $$
   \sum_{i=1}^{n} i = \frac{n(n + 1)}{2}
 $$
 
-It's implementation is the simplest, but I think the challenge is to be aware of
+Its implementation is the simplest, but I think the challenge is to be aware of
 it (and maybe to prove it using induction):
 
 ```ts
@@ -93,7 +89,7 @@ list out some interesting choices I made:
 
 - `pnpm` instead of `npm`: faster installation; can be used for
   workspace/monorepo later.
-- Biome instead of Prettify + ESLint: faster; easier to set up and simpler
+- Biome instead of Prettier + ESLint: faster; easier to set up and simpler
   configuration.
 - SQLite instead of Postgres/MySQL/MongoDB: easier to setup (Postgres or MySQL
   or MongoDB would require more work on both local development and production
@@ -182,7 +178,7 @@ I'll try to justify my codebase's structure as well:
   something heavy-weight like NestJS and would follow the established
   convention.
 
-Should I have more time, I would implement these things as well:
+Given more time, I would implement these things as well:
 
 - Logging library: it'd be great if we wrap the current `console.log` calls
   around a `logger`
@@ -191,7 +187,7 @@ Should I have more time, I would implement these things as well:
 - Build to single `.js` using `esbuild` + Dockerfile: for a production-grade
   deployment, people would expect the service to be Dockerized, and we should
   give them that. However, I noticed that the image size would be large if we
-  copy also `node_module/`, so I often try to
+  also copy `node_modules/`, so I often try to
   - Use `esbuild` to turn the code into a single `index.js` file (similar to how
     we build binary file), then
   - Copy the final file to a "clean" image that only has NodeJS available
@@ -237,12 +233,12 @@ these options after considering the team's openness to experiment and the
 current codebase's state as well:
 
 - Option 1: hand roll something using either SSE, or WebSocket, or just plain
-  polling. We should do this if we have a well-established code base already, or
+  polling. We should do this if we have a well-established codebase already, or
   we are new but the team aren't that open for expirement.
 - Option 2: go all-in on a BaaS (Backend as a Service) like Convex, or Supabase,
   or even Pocketbase and Firebase. I think this option might work if we are
-  given the chance to do something from scratch, and the team is open for doing
-  something new.
+  given the chance to do something from scratch, and the team is open for trying
+  new backend frameworks.
 - Option 3: this is a variation of Option 1, where we replace we use a "sync
   engine" like PowerSync or ElectricSQL or ZeroSync to abstract away the manual
   work with SSE or WebSocket. Of course, while this is "safer" than Option 2, it
@@ -256,9 +252,8 @@ For the sake of completeness, I'll add other assumptions:
 
 Therefore, Option 1 and Option 3 are potential candidates. I rolled a working
 implementation for Option 1 in another [take-home
-test](https://github.com/thanhnguyen2187/elsa-challenge), and Option 2 is a bit
-too trivial to have further discussion, so for the next part, I'll wrap up with
-how I'd implement Option 3.
+test](https://github.com/thanhnguyen2187/elsa-challenge), so for the next part,
+I'll wrap up with how I'd implement Option 3.
 
 ### High-level Design
 
