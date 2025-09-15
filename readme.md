@@ -279,7 +279,22 @@ For the steps in the implementation plan, I'd ask the team to:
    decide if it's better to use either of them or hand roll the work
 3. Do the actual implementation
 
-On scalability, I'd say as the sync engine can be considered stateless, we would
-have no problem scaling them horizontally. For the database, I'd start with
-having read-only replications first before trying to dive in deeper.
+### Scalability
+
+![](src/problem6/high-level-scalability.webp)
+
+I'd consider trying one (or more) of those options:
+
+- Scale out the sync engine: as the sync engine can be considered stateless, I
+  think we can just put a load balancer in front and spawn more engines.
+- Replicate the database to a read-only version: I think with proper setting up,
+  it wouldn't increase the latency too much.
+- Batch the writes: depends on the actual logic, I would investigate if we have
+  a chance to batch the writing. For example, let's say we have two actions:
+  `inc(Alice, 10)`, and `inc(Alice, 20)`, then we batch them to `inc(Alice, 30)`
+  to reduce the load to the database.
+- Partition the table: again, depends on the actual logic, I think it's an
+  option to reduce the load as well. Let's say our users are in different game
+  rooms, and `tbl_scores` also has a `room_id` column, then it wouldn't hurt us
+  partitioning by `room_id`.
 
