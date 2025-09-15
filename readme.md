@@ -198,6 +198,10 @@ Should I have more time, I would implement these things as well:
 
 ## Problem 6
 
+### Requirements and Additional Assumptions
+
+![](src/problem6/leaderboard.webp)
+
 The original requirements stated that we need
 
 - A score board that is live updated, with
@@ -253,8 +257,10 @@ For the sake of completeness, I'll add other assumptions:
 Therefore, Option 1 and Option 3 are potential candidates. I rolled a working
 implementation for Option 1 in another [take-home
 test](https://github.com/thanhnguyen2187/elsa-challenge), and Option 2 is a bit
-too trivial to have further discussion, so I'll write about how I'd implement
-Option 3 with this high-level design:
+too trivial to have further discussion, so for the next part, I'll wrap up with
+how I'd implement Option 3.
+
+### High-level Design
 
 ![](src/problem6/high-level-design.webp)
 
