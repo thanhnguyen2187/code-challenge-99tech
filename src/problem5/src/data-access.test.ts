@@ -124,7 +124,6 @@ test("delete successfully", () => {
 
   {
     const items = DataAccess.TodoItem.listAll(db);
-    // biome-ignore lint/style/noNonNullAssertion: false negative TypeScript check
     const item = items[0]!;
     DataAccess.TodoItem.deleteOne(db, item.id);
   }
