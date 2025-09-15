@@ -266,9 +266,10 @@ how I'd implement Option 3.
 
 We'd have two pages:
 
-- `/leaderboard`: where we look at people with top scores
+- `/leaderboard`: where we look at people with top scores.
 - `/mission`: personal pages of each user, where they can "complete" mission to
-  increase their score
+  increase their score; as this is a personal page already, I think
+  authentication and authorization shouldn't be a problem.
 
 The mission page would call the backend service, then ask it to interact with a
 database as usual. The end result would be in a table named `tbl_scores` and
