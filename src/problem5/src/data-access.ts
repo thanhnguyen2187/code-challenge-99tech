@@ -38,6 +38,7 @@ export namespace DataAccess {
         throw new Error(message);
       }
     }
+    console.info("DataAccess.migrate: migrated to latest version");
   }
 
   export function listTableNames(db: BetterSQLite3.Database) {
